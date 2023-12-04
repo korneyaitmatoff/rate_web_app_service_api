@@ -20,6 +20,8 @@ class Tasks(Base):
 
 class HtmlValidationLog(Base):
     """Таблица логов валидации html"""
+    __tablename__ = "html_validation_log"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     site_id = Column(Integer, nullable=False)
     logs = Column(TEXT, nullable=False)
@@ -28,5 +30,7 @@ class HtmlValidationLog(Base):
 
 class PerformanceLogs(Base):
     """Таблица логов нт"""
+    __tablename__ = "performance_log"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     site_id = Column(Integer, nullable=False)
