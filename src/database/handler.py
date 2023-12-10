@@ -1,12 +1,20 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
+from config import (
+    DB_HOST,
+    DB_PORT,
+    DB_NAME,
+    DB_USER,
+    DB_PASSWORD
+)
+
 
 class DatabaseHandler:
     """Класс для работы с базой данных"""
 
     def __init__(self):
-        self.url = f"postgresql://tavern:tavern@45.9.43.40:5432/app"
+        self.url = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
         self.engine = create_engine(url=self.url)
         self.session = None
 
@@ -46,10 +54,11 @@ class DatabaseHandler:
         self.session.execute(text("SELECT 1;"))
         self.close_session()
 
-    def select(self, table, filters: tuple, limit: int = 1000) -> list:
+    def select(self, table, filters: tuple = (), limit: int = 1000) -> list:
         """Получение данных из таблицы"""
 
-        return self.session.query(table).filter(*filters).limit(limit).all()
+        return self.session.query(table).filter(*filters).limit(limit).all() if tuple else self.session.query(
+            table).limit(limit).all()
 
     def insert(self, table, data: dict):
         """Добавление записи"""
