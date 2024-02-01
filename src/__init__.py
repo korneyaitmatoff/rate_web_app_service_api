@@ -33,7 +33,7 @@ app.register_routes([
             {
                 "path": "/{site_id}",
                 "responses": {400: {"description": "Bad request"}},
-                "response_model": HtmlValidation,
+                # "response_model": HtmlValidation,
                 "description": "Получение лога по site_id", "methods": ['GET'],
                 "endpoint": html_service.get_log
             },

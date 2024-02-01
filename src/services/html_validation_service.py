@@ -15,9 +15,9 @@ class HtmlValidationService(Service):
     def __init__(self, repository: HtmlValidationRepository):
         super().__init__(repository=repository)
 
-    def get_log(self, site_id: int) -> Hv:
+    def get_log(self, site_id: int):
         """Получение лога"""
-        return self.repository.get_log_by_site_id(site_id=site_id)[0]
+        return self.repository.get_log_by_site_id(site_id=site_id)
 
     def add_log(self, data: Hv_dict) -> Hv:
         """Добавление лога"""
