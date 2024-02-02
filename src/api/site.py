@@ -1,4 +1,5 @@
 from requests import post, get, Response
+from loguru import logger
 
 from src.api.web_app_api import WebAppApi
 from src.schemas.html_validation_schema import HtmlValidationDict
@@ -11,8 +12,13 @@ class SiteApi(WebAppApi):
         super().__init__(path=path)
 
     def get_site(self, site_id: int) -> Response:
-        """Получение всех сайтов"""
-        return get(url=f'{self.URL}/{self.path}/{site_id}')
+        """Получение сайта по id"""
+
+        response = get(url=f'{self.URL}/{self.path}/{site_id}')
+
+        logger.debug(f"Получен запрос: {response.text}")
+
+        return response
 
     def create_site(self, data: HtmlValidationDict) -> Response:
         """Создание сайта"""
