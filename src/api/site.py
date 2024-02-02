@@ -14,9 +14,13 @@ class SiteApi(WebAppApi):
     def get_site(self, site_id: int) -> Response:
         """Получение сайта по id"""
 
-        response = get(url=f'{self.URL}/{self.path}/{site_id}')
+        url = f'{self.URL}/{self.path}/{site_id}'
 
-        logger.debug(f"Получен запрос: {response.text}")
+        logger.debug(f"Отправка запроса: {url}")
+
+        response = get(url=url)
+
+        logger.debug(f"Получен ответ: {response.text}")
 
         return response
 
