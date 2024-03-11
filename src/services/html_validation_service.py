@@ -21,6 +21,8 @@ class HtmlValidationService(Service):
 
     def add_log(self, data: Hv_dict) -> Hv:
         """Добавление лога"""
+        self.delete(filters=(self.repository.table.site_id == data['site_id'],))
+
         return self.create(data={
             'site_id': data['site_id'],
             'logs': dumps(handler().get_site_validation(data['site_id']))
