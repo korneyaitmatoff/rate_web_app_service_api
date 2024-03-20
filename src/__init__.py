@@ -50,6 +50,12 @@ app.register_routes([
                 "description": "Удаление лога", "methods": ['DELETE'],
                 "endpoint": html_service.delete_log
             },
+            {
+                "path": "/stat/{site_id}",
+                "responses": {400: {"description": "Bad request"}},
+                "description": "Получение статистики логов сайта", "methods": ['GET'],
+                "endpoint": html_service.get_log_stat
+            },
         ],
         prefix='/html_val'
     ).get_router(),

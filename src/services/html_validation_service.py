@@ -1,4 +1,4 @@
-from json import dumps
+from json import dumps, loads
 
 from src.services.service import Service
 from src.repositories.html_validation_repostory import HtmlValidationRepository
@@ -21,8 +21,6 @@ class HtmlValidationService(Service):
 
     def add_log(self, data: Hv_dict) -> Hv:
         """Добавление лога"""
-        self.delete(filters=(self.repository.table.site_id == data['site_id'],))
-
         return self.create(data={
             'site_id': data['site_id'],
             'logs': dumps(handler().get_site_validation(data['site_id']))
@@ -31,3 +29,27 @@ class HtmlValidationService(Service):
     def delete_log(self, log_id: int):
         """Удаление лога"""
         self.delete(filters=(self.repository.table.id == log_id,))
+
+    def get_all_logs(self) -> list:
+        return self.repository.get_logs()
+
+    def get_log_stat(self, site_id):
+        """Получение сайтовой статистики
+
+        Args:
+            site_id: идентификатор сайта
+        """
+        errors_count_list: dict[int, int] = {}
+
+        for log in self.get_all_logs():
+            if log.site_id not in errors_count_list:
+                errors_count_list[log.site_id] = 0
+            errors_count_list[log.site_id] += len(loads(log.logs))
+
+        avg = sum(errors_count_list.values()) / float(len(errors_count_list))
+
+        return {
+            "avg": avg,
+            "diff": avg - errors_count_list[int(site_id)],
+            "stat": {log.created_at: len(loads(log.logs)) for log in self.get_log(site_id=site_id)}
+        }
