@@ -56,7 +56,7 @@ class HtmlValidationService(Service):
 
         return {
             "avg": avg,
-            "diff": (100 * abs(diff)) / avg,
+            "diff": round((100 * abs(diff)) / avg),
             "ml": 1 if diff > 0 else 0,
             "stat": {log.created_at: len(loads(log.logs)) for log in self.get_log(site_id=site_id)},
         }
