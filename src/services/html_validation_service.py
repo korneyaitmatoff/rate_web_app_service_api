@@ -1,6 +1,7 @@
 from json import dumps, loads
 
 from src.services.service import Service
+from src.api.site import SiteApi
 from src.repositories.html_validation_repostory import HtmlValidationRepository
 from src.schemas.html_validation_schema import (
     HtmlValidationDict as Hv_dict,
@@ -41,15 +42,21 @@ class HtmlValidationService(Service):
         """
         errors_count_list: dict[int, int] = {}
 
-        for log in self.get_all_logs():
-            if log.site_id not in errors_count_list:
-                errors_count_list[log.site_id] = 0
-            errors_count_list[log.site_id] += len(loads(log.logs))
+        site = SiteApi().get_site(site_id=site_id).json()
+        sites_by_category = SiteApi().get_sites_by_category(category=site['category']).json()
 
-        avg = sum(errors_count_list.values()) / float(len(errors_count_list))
+        logs = [self.get_log(site['id']) for site in sites_by_category]
+
+        for log_el in logs:
+            for log in log_el:
+                errors_count_list[log.site_id] = len(loads(log.logs))
+
+        avg = round(sum(errors_count_list.values()) / float(len(errors_count_list)))
+        diff = round(avg - errors_count_list[int(site_id)])
 
         return {
             "avg": avg,
-            "diff": avg - errors_count_list[int(site_id)],
-            "stat": {log.created_at: len(loads(log.logs)) for log in self.get_log(site_id=site_id)}
+            "diff": (100 * abs(diff)) / avg,
+            "ml": 1 if diff > 0 else 0,
+            "stat": {log.created_at: len(loads(log.logs)) for log in self.get_log(site_id=site_id)},
         }
