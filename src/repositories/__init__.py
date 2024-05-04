@@ -1,2 +1,3 @@
+from src.repositories.css_validation_repository import CssValidationRepository
 from src.repositories.html_validation_repostory import HtmlValidationRepository
 from src.repositories.task_repository import TaskRepository

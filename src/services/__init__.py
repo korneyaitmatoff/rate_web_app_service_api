@@ -1,2 +1,3 @@
 from src.services.html_validation_service import HtmlValidationService
+from src.services.css_validation_service import CssValidationService
 from src.services.task_service import TaskService

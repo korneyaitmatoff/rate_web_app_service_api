@@ -40,23 +40,40 @@ class HtmlValidationService(Service):
         Args:
             site_id: идентификатор сайта
         """
-        errors_count_list: dict[int, int] = {}
-
         site = SiteApi().get_site(site_id=site_id).json()
         sites_by_category = SiteApi().get_sites_by_category(category=site['category']).json()
+        site_logs = self.get_log(site_id=site_id)
 
-        logs = [self.get_log(site['id']) for site in sites_by_category]
+        errors_count: int = 0
+        warnings_count: int = 0
+        site_errors_counts: int = loads(site_logs[0].logs)['errors']['count']
+        site_warnings_counts: int = loads(site_logs[0].logs)['warnings']['count']
 
-        for log_el in logs:
+        sites_logs = [self.get_log(site['id']) for site in sites_by_category]
+
+        for log_el in sites_logs:
             for log in log_el:
-                errors_count_list[log.site_id] = len(loads(log.logs))
+                logs = loads(log.logs)
 
-        avg = round(sum(errors_count_list.values()) / float(len(errors_count_list)))
-        diff = round(avg - errors_count_list[int(site_id)])
+                errors_count += int(logs['errors']['count'])
+                warnings_count += int(logs['warnings']['count'])
+
+        errors_avg = round(errors_count / len(sites_logs))
+        warnings_avg = round(warnings_count / len(sites_logs))
+        errors_diff = errors_avg - site_errors_counts
+        warnings_diff = warnings_avg - site_warnings_counts
 
         return {
-            "avg": avg,
-            "diff": round((100 * abs(diff)) / avg),
-            "ml": 1 if diff > 0 else 0,
-            "stat": {log.created_at: len(loads(log.logs)) for log in self.get_log(site_id=site_id)},
+            "errors": {
+                "avg": errors_avg,
+                "diff": round((100 * abs(errors_diff)) / errors_avg),
+                "ml": 1 if errors_diff > 0 else 0,
+                "stat": {log.created_at: loads(log.logs)['errors']['count'] for log in site_logs}
+            },
+            "warnings": {
+                "avg": warnings_avg,
+                "diff": round((100 * abs(warnings_diff)) / warnings_avg),
+                "ml": 1 if warnings_diff > 0 else 0,
+                "stat": {log.created_at: loads(log.logs)['warnings']['count'] for log in site_logs}
+            }
         }

@@ -7,7 +7,7 @@ from src.repositories.repository import Repository
 
 
 class HtmlValidationRepository(Repository):
-    """Репозиторй html-v логов"""
+    """Репозиторий html-v логов"""
 
     def __init__(self, table: Type[DeclarativeMeta], database_handler):
         super().__init__(table=table, database_handler=database_handler)

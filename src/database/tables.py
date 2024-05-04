@@ -28,6 +28,16 @@ class HtmlValidationLog(Base):
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
 
+class CssValidationLog(Base):
+    """Таблица логов валидации css"""
+    __tablename__ = "css_validation_log"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    site_id = Column(Integer, nullable=False)
+    logs = Column(TEXT, nullable=False)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+
 class PerformanceLogs(Base):
     """Таблица логов нт"""
     __tablename__ = "performance_log"
