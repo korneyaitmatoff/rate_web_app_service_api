@@ -25,18 +25,39 @@ class CssValidationHandler:
             )
         )
 
-        return dumps({
-            "errors": {
-                "count": parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:errors'][
-                    'm:errorcount'],
-                "errors": parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:errors'][
-                    'm:errorlist']
-            },
-            "warnings": {
-                "count": parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:warnings'][
-                    'm:warningcount'],
-                "warnings":
-                    parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:warnings'][
-                        'm:warninglist']
-            }
-        })
+        try:
+            return dumps({
+                "errors": {
+                    "count":
+                        parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:errors'][
+                            'm:errorcount'],
+                    "errors":
+                        parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:errors'][
+                            'm:errorlist']
+                },
+                "warnings": {
+                    "count":
+                        parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:warnings'][
+                            'm:warningcount'],
+                    "warnings":
+                        parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:warnings'][
+                            'm:warninglist']
+                }
+            })
+        except KeyError:
+            return dumps({
+                "errors": {
+                    "count": 0,
+                    "errors": [
+                        "Не удалось считать данные сайта. "
+                        "Проверьте, что доступ к сайту не ограничивают сторонние утилиты."
+                    ]
+                },
+                "warnings": {
+                    "count": 0,
+                    "warnings": [
+                        "Не удалось считать данные сайта. "
+                        "Проверьте, что доступ к сайту не ограничивают сторонние утилиты."
+                    ]
+                }
+            })
