@@ -47,17 +47,23 @@ class CssValidationService(Service):
         errors_diff = errors_avg - site_errors_counts
         warnings_diff = warnings_avg - site_warnings_counts
 
-        return {
-            "errors": {
-                "avg": errors_avg,
-                "diff": round((100 * abs(errors_diff)) / errors_avg),
-                "ml": 1 if errors_diff > 0 else 0,
-                "stat": {log.created_at: loads(log.logs)['errors']['count'] for log in site_logs}
-            },
-            "warnings": {
-                "avg": warnings_avg,
-                "diff": round((100 * abs(warnings_diff)) / warnings_avg),
-                "ml": 1 if warnings_diff > 0 else 0,
-                "stat":  {log.created_at: loads(log.logs)['warnings']['count'] for log in site_logs}
+        try:
+            return {
+                "errors": {
+                    "avg": errors_avg,
+                    "diff": round((100 * abs(errors_diff)) / errors_avg),
+                    "ml": 1 if errors_diff > 0 else 0,
+                    "stat": {log.created_at: loads(log.logs)['errors']['count'] for log in site_logs}
+                },
+                "warnings": {
+                    "avg": warnings_avg,
+                    "diff": round((100 * abs(warnings_diff)) / warnings_avg),
+                    "ml": 1 if warnings_diff > 0 else 0,
+                    "stat": {log.created_at: loads(log.logs)['warnings']['count'] for log in site_logs}
+                }
             }
-        }
+        except ZeroDivisionError:
+            return {
+                "success": False,
+                "message": "Не удалось рассчитать статистику. Проверьте доступ к сайту или целостность логов."
+            }
