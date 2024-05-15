@@ -17,10 +17,12 @@ class CssValidationHandler:
             if isinstance(data[key], list):
                 for el in data[key]:
                     if 'java.lang.Exception' not in el['m:message']:
-                        result.append(el['m:message'])
+                        if len(el['m:message']) <= 100:
+                            result.append(el['m:message'])
             else:
                 if 'java.lang.Exception' not in data[key]['m:message']:
-                    result.append(data[key]['m:message'])
+                    if len(data[key]['m:message']) <= 100:
+                        result.append(data[key]['m:message'])
 
         return result
 
