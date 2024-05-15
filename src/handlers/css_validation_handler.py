@@ -10,6 +10,21 @@ class CssValidationHandler:
     SITE_NOT_FOUND_ERROR = "Сайт не был найден. Убедитесь в достоверности данных."
 
     @staticmethod
+    def parse_errors(errors, key) -> list:
+        result = []
+
+        for data in errors:
+            if isinstance(data[key], list):
+                for el in data[key]:
+                    if 'java.lang.Exception' not in el['m:message']:
+                        result.append(el['m:message'])
+            else:
+                if 'java.lang.Exception' not in data[key]['m:message']:
+                    result.append(data[key]['m:message'])
+
+        return result
+
+    @staticmethod
     def get_site_validation(site_id: int) -> str:
         """Функция для html-валидации сайтаjr
 
@@ -31,17 +46,22 @@ class CssValidationHandler:
                     "count":
                         parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:errors'][
                             'm:errorcount'],
-                    "errors":
-                        parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:errors'][
-                            'm:errorlist']
+                    "errors": CssValidationHandler.parse_errors(
+                        errors=parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']
+                        ['m:errors']['m:errorlist'],
+                        key='m:error'
+                    )
                 },
                 "warnings": {
                     "count":
                         parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:warnings'][
                             'm:warningcount'],
                     "warnings":
-                        parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']['m:warnings'][
-                            'm:warninglist']
+                        CssValidationHandler.parse_errors(
+                            errors=parse_result['env:Envelope']['env:Body']['m:cssvalidationresponse']['m:result']
+                            ['m:warnings']['m:warninglist'],
+                            key='m:warning'
+                        )
                 }
             })
         except KeyError:
