@@ -33,11 +33,11 @@ class HtmlValidationHandler:
         for item in validate(SiteApi(path='site').get_site(site_id=site_id).json()['url'], verbose=True)['messages']:
             if item['type'] == "error":
                 result['errors']['count'] += 1
-                if len(item['message']) <= 100:
+                if len(item['message']) <= 256:
                     result['errors']['errors'].append(item)
             else:
                 result['warnings']['count'] += 1
-                if len(item['message']) <= 100:
+                if len(item['message']) <= 256:
                     result['warnings']['warnings'].append(item)
 
         return result
