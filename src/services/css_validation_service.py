@@ -11,10 +11,7 @@ class CssValidationService(Service):
     repository: CssValidationRepository
 
     def add_log(self, data: CssValidationDict):
-        return self.create(data={
-            'site_id': data['site_id'],
-            'logs': str(handler.get_site_validation(site_id=data['site_id']))
-        })
+        return str(handler.get_site_validation(site_id=data['site_id']))
 
     def get_log(self, site_id: int):
         return self.repository.get_log(site_id=site_id)
@@ -44,10 +41,12 @@ class CssValidationService(Service):
 
         errors_avg = round(errors_count / len(sites_logs))
         warnings_avg = round(warnings_count / len(sites_logs))
-        errors_diff = errors_avg - site_errors_counts
-        warnings_diff = warnings_avg - site_warnings_counts
+
 
         try:
+            errors_diff = errors_avg - site_errors_counts
+            warnings_diff = warnings_avg - site_warnings_counts
+
             return {
                 "errors": {
                     "avg": errors_avg,
@@ -62,7 +61,7 @@ class CssValidationService(Service):
                     "stat": {log.created_at: loads(log.logs)['warnings']['count'] for log in site_logs}
                 }
             }
-        except ZeroDivisionError:
+        except Exception:
             return {
                 "success": False,
                 "message": "Не удалось рассчитать статистику. Проверьте доступ к сайту или целостность логов."
