@@ -11,7 +11,10 @@ class CssValidationService(Service):
     repository: CssValidationRepository
 
     def add_log(self, data: CssValidationDict):
-        return str(handler.get_site_validation(site_id=data['site_id']))
+        return self.create(data={
+            'site_id': data['site_id'],
+            'logs': str(handler.get_site_validation(site_id=data['site_id']))
+        })
 
     def get_log(self, site_id: int):
         return self.repository.get_log(site_id=site_id)
